@@ -9,7 +9,7 @@ from telegram.ext import (
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-TOKEN = "8620671678:AAH0ynF1TEv5UmR_RGVpd0Nly3p_7RqlZ94"
+TOKEN = "8620671678:AAF-qzQ8xeSVpHfuvsoRqSF3IUSJmzSP_gs"
 
 # ──────────────────────────────────────────────
 # Состояния викторины
