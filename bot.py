@@ -8,7 +8,7 @@ from telegram.ext import (
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-TOKEN = "ВАШ_TOKEN_ЗДЕСЬ"  # Замените на токен от @BotFather
+TOKEN = "8620671678:AAH0ynF1TEv5UmR_RGVpd0Nly3p_7RqlZ94"  # Замените на токен от @BotFather
 
 # ──────────────────────────────────────────────
 # Состояния викторины
@@ -20,10 +20,10 @@ QUIZ_GENRE, QUIZ_TIME, QUIZ_PLATFORM, QUIZ_MOOD = range(4)
 # ──────────────────────────────────────────────
 MAIN_MENU_KEYBOARD = ReplyKeyboardMarkup(
     [
-        [KeyboardButton("🎮 Подобрать игру")],
-        [KeyboardButton("📋 Обзоры игр"), KeyboardButton("📖 Гайды")],
-        [KeyboardButton("ℹ️ Что умеет бот"), KeyboardButton("🏢 О проекте")],
-        [KeyboardButton("📞 Контакты")],
+        [KeyboardButton("Подобрать игру")],
+        [KeyboardButton("Обзоры игр"), KeyboardButton("Гайды")],
+        [KeyboardButton("Что умеет бот"), KeyboardButton("О проекте")],
+        [KeyboardButton("Контакты")],
     ],
     resize_keyboard=True,
     one_time_keyboard=False,
@@ -52,11 +52,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def about_bot(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
         "GameMatch умеет:\n\n"
-        "🎮 Подбор игр — ответьте на 4 вопроса и получите персональную подборку, "
+        "Подбор игр — ответьте на 4 вопроса и получите персональную подборку, "
         "составленную с учётом вашего жанра, платформы и настроения.\n\n"
-        "📋 Обзоры — краткие честные обзоры актуальных игр с оценками по ключевым критериям.\n\n"
-        "📖 Гайды — полезные советы по популярным играм: прохождение, механики, секреты.\n\n"
-        "🔍 Поиск — введите название игры, и бот покажет основную информацию о ней.\n\n"
+        "Обзоры — краткие честные обзоры актуальных игр с оценками по ключевым критериям.\n\n"
+        "Гайды — полезные советы по популярным играм: прохождение, механики, секреты.\n\n"
+        "Поиск — введите название игры, и бот покажет основную информацию о ней.\n\n"
         "Все разделы доступны через меню."
     )
     await update.message.reply_text(text, reply_markup=MAIN_MENU_KEYBOARD)
@@ -415,12 +415,12 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # Обработка кнопок меню
     menu_handlers = {
-        "🎮 подобрать игру": quiz_start,
-        "📋 обзоры игр": reviews,
-        "📖 гайды": guides,
-        "ℹ️ что умеет бот": about_bot,
-        "🏢 о проекте": about_company,
-        "📞 контакты": contacts,
+        "подобрать игру": quiz_start,
+        "обзоры игр": reviews,
+        "гайды": guides,
+        "что умеет бот": about_bot,
+        "о проекте": about_company,
+        "контакты": contacts,
     }
     for key, handler in menu_handlers.items():
         if text_lower == key:
