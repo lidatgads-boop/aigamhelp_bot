@@ -1,3 +1,4 @@
+import os
 import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import (
@@ -8,7 +9,7 @@ from telegram.ext import (
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-TOKEN = "8620671678:AAH0ynF1TEv5UmR_RGVpd0Nly3p_7RqlZ94"  # Замените на токен от @BotFather
+TOKEN = os.getenv("TOKEN")
 
 # ──────────────────────────────────────────────
 # Состояния викторины
@@ -152,14 +153,14 @@ async def review_detail(update: Update, context: ContextTypes.DEFAULT_TYPE):
     idx = int(query.data.split("_")[1])
     r = REVIEWS[idx]
     text = (
-        f"📋 {r['title']} ({r['year']})\n"
+        f"{r['title']} ({r['year']})\n"
         f"Жанр: {r['genre']}\n"
         f"Оценка: {r['score']}\n\n"
         f"{r['text']}\n\n"
         f"Плюсы: {r['pros']}\n"
         f"Минусы: {r['cons']}"
     )
-    back_btn = InlineKeyboardMarkup([[InlineKeyboardButton("← Назад к обзорам", callback_data="reviews_back")]])
+    back_btn = InlineKeyboardMarkup([[InlineKeyboardButton("<- Назад к обзорам", callback_data="reviews_back")]])
     await query.edit_message_text(text, reply_markup=back_btn)
 
 async def reviews_back(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -211,8 +212,8 @@ async def guide_detail(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.answer()
     idx = int(query.data.split("_")[1])
     title = list(GUIDES.keys())[idx]
-    text = f"📖 {title}\n\n{GUIDES[title]}"
-    back_btn = InlineKeyboardMarkup([[InlineKeyboardButton("← Назад к гайдам", callback_data="guides_back")]])
+    text = f"{title}\n\n{GUIDES[title]}"
+    back_btn = InlineKeyboardMarkup([[InlineKeyboardButton("<- Назад к гайдам", callback_data="guides_back")]])
     await query.edit_message_text(text, reply_markup=back_btn)
 
 async def guides_back(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -226,17 +227,8 @@ async def guides_back(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 # ──────────────────────────────────────────────
-# Викторина: Подбор игры (4 вопроса → уникальный результат)
+# Викторина: Подбор игры
 # ──────────────────────────────────────────────
-
-QUIZ_DATA = {
-    # (genre, time, platform, mood) -> рекомендации
-    # genre: action / rpg / strategy / indie
-    # time: short / long
-    # platform: pc / console / mobile
-    # mood: serious / relax
-}
-
 RECOMMENDATIONS = {
     ("action", "short", "pc", "relax"):      ["Hades II", "Dead Cells", "Vampire Survivors"],
     ("action", "short", "pc", "serious"):    ["Sekiro", "Hollow Knight", "Returnal"],
@@ -244,49 +236,48 @@ RECOMMENDATIONS = {
     ("action", "long", "pc", "serious"):     ["Elden Ring", "Dark Souls III", "Nioh 2"],
     ("action", "short", "console", "relax"): ["Astro's Playroom", "Hades II", "Celeste"],
     ("action", "short", "console", "serious"):["Returnal", "Hollow Knight", "Dead Cells"],
-    ("action", "long", "console", "relax"):  ["God of War Ragnarök", "Horizon FW", "Ratchet & Clank"],
+    ("action", "long", "console", "relax"):  ["God of War Ragnarok", "Horizon FW", "Ratchet and Clank"],
     ("action", "long", "console", "serious"):["Elden Ring", "Sekiro", "Ghost of Tsushima"],
     ("rpg", "short", "pc", "relax"):         ["Disco Elysium", "Undertale", "Hades II"],
     ("rpg", "short", "pc", "serious"):       ["Planescape Torment", "Disco Elysium", "Tyranny"],
-    ("rpg", "long", "pc", "relax"):          ["Baldur's Gate 3", "Divinity OS2", "The Witcher 3"],
-    ("rpg", "long", "pc", "serious"):        ["Baldur's Gate 3", "Pathfinder WotR", "Dragon Age Origins"],
+    ("rpg", "long", "pc", "relax"):          ["Baldurs Gate 3", "Divinity OS2", "The Witcher 3"],
+    ("rpg", "long", "pc", "serious"):        ["Baldurs Gate 3", "Pathfinder WotR", "Dragon Age Origins"],
     ("rpg", "short", "console", "relax"):    ["Undertale", "CrossCode", "Octopath Traveler"],
     ("rpg", "short", "console", "serious"):  ["Octopath Traveler", "Crisis Core", "Xenogears"],
     ("rpg", "long", "console", "relax"):     ["The Witcher 3", "Final Fantasy XVI", "Persona 5"],
-    ("rpg", "long", "console", "serious"):   ["Baldur's Gate 3", "Final Fantasy XIV", "Dragon's Dogma 2"],
+    ("rpg", "long", "console", "serious"):   ["Baldurs Gate 3", "Final Fantasy XIV", "Dragons Dogma 2"],
     ("strategy", "short", "pc", "relax"):    ["Into the Breach", "Slay the Spire", "FTL"],
     ("strategy", "short", "pc", "serious"):  ["XCOM 2", "Slay the Spire", "Dungeon of the Endless"],
     ("strategy", "long", "pc", "relax"):     ["Civilization VI", "Age of Empires IV", "Humankind"],
-    ("strategy", "long", "pc", "serious"):   ["Total War: Warhammer III", "Crusader Kings III", "Victoria 3"],
+    ("strategy", "long", "pc", "serious"):   ["Total War Warhammer III", "Crusader Kings III", "Victoria 3"],
     ("strategy", "short", "console", "relax"):["Into the Breach", "FTL", "Slay the Spire"],
     ("strategy", "short", "console", "serious"):["XCOM 2", "Into the Breach", "Armello"],
     ("strategy", "long", "console", "relax"): ["Civilization VI", "Two Point Hospital", "Planet Coaster"],
     ("strategy", "long", "console", "serious"):["XCOM 2", "Frostpunk", "Ashes of the Singularity"],
     ("indie", "short", "pc", "relax"):       ["Stardew Valley", "Unpacking", "A Short Hike"],
-    ("indie", "short", "pc", "serious"):     ["Celeste", "Disco Elysium", "Papers, Please"],
+    ("indie", "short", "pc", "serious"):     ["Celeste", "Disco Elysium", "Papers Please"],
     ("indie", "long", "pc", "relax"):        ["Stardew Valley", "Terraria", "Hollow Knight"],
     ("indie", "long", "pc", "serious"):      ["Hollow Knight", "Outer Wilds", "Disco Elysium"],
     ("indie", "short", "console", "relax"):  ["A Short Hike", "Unpacking", "Donut County"],
     ("indie", "short", "console", "serious"):["Celeste", "Inside", "Limbo"],
     ("indie", "long", "console", "relax"):   ["Stardew Valley", "Terraria", "My Time at Portia"],
     ("indie", "long", "console", "serious"): ["Hollow Knight", "Outer Wilds", "Spiritfarer"],
-    # mobile fallback
-    ("action", "short", "mobile", "relax"):  ["Pascal's Wager", "Oceanhorn", "Alto's Odyssey"],
-    ("action", "short", "mobile", "serious"):["Pascal's Wager", "Grimvalor", "Hyperlight Drifter"],
+    ("action", "short", "mobile", "relax"):  ["Pascals Wager", "Oceanhorn", "Altos Odyssey"],
+    ("action", "short", "mobile", "serious"):["Pascals Wager", "Grimvalor", "Hyperlight Drifter"],
     ("action", "long", "mobile", "relax"):   ["Genshin Impact", "Honkai Star Rail", "Oceanhorn 2"],
-    ("action", "long", "mobile", "serious"): ["Genshin Impact", "Pascal's Wager", "Diablo Immortal"],
+    ("action", "long", "mobile", "serious"): ["Genshin Impact", "Pascals Wager", "Diablo Immortal"],
     ("rpg", "short", "mobile", "relax"):     ["Stardew Valley Mobile", "Evoland", "Chrono Trigger"],
     ("rpg", "short", "mobile", "serious"):   ["Chrono Trigger", "FF Tactics", "80 Days"],
     ("rpg", "long", "mobile", "relax"):      ["Genshin Impact", "Honkai Star Rail", "AFK Arena"],
-    ("rpg", "long", "mobile", "serious"):    ["Genshin Impact", "Diablo Immortal", "Star Ocean: AC"],
+    ("rpg", "long", "mobile", "serious"):    ["Genshin Impact", "Diablo Immortal", "Star Ocean AC"],
     ("strategy", "short", "mobile", "relax"):["Mini Metro", "Polytopia", "Reigns"],
     ("strategy", "short", "mobile", "serious"):["Polytopia", "Bad North", "Into the Breach Mobile"],
     ("strategy", "long", "mobile", "relax"): ["Polytopia", "Civilization Revolution", "Tower Defense"],
     ("strategy", "long", "mobile", "serious"):["Polytopia", "Battle Brothers", "Darkest Dungeon Mobile"],
-    ("indie", "short", "mobile", "relax"):   ["Alto's Odyssey", "Monument Valley", "Donut County"],
+    ("indie", "short", "mobile", "relax"):   ["Altos Odyssey", "Monument Valley", "Donut County"],
     ("indie", "short", "mobile", "serious"): ["Papers Please", "Florence", "Inside"],
     ("indie", "long", "mobile", "relax"):    ["Stardew Valley", "Terraria Mobile", "Crashlands"],
-    ("indie", "long", "mobile", "serious"):  ["Slay the Spire", "Dead Cells Mobile", "Hades (Switch)"],
+    ("indie", "long", "mobile", "serious"):  ["Slay the Spire", "Dead Cells Mobile", "Hades Switch"],
 }
 
 
@@ -371,12 +362,15 @@ async def quiz_mood(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def quiz_cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Подбор игры отменён. Вы можете вернуться к нему в любой момент.", reply_markup=MAIN_MENU_KEYBOARD)
+    await update.message.reply_text(
+        "Подбор игры отменён. Вы можете вернуться к нему в любой момент.",
+        reply_markup=MAIN_MENU_KEYBOARD
+    )
     return ConversationHandler.END
 
 
 # ──────────────────────────────────────────────
-# Поиск по названию игры (текстовый ввод)
+# Поиск по названию игры
 # ──────────────────────────────────────────────
 GAME_DB = {
     "elden ring": {
@@ -385,22 +379,19 @@ GAME_DB = {
                 "Подходит тем, кто готов к высокой сложности и исследованию.",
         "score": "9.5/10", "genre": "Action RPG", "platform": "PC, PS5, Xbox",
     },
-    "baldur's gate 3": {
+    "baldurs gate 3": {
         "full": "Baldur's Gate 3 (2023) — RPG от Larian Studios на основе правил D&D 5e. "
-                "Глубокий сюжет, тактические пошаговые бои, кооператив до 4 игроков. "
-                "Одна из лучших RPG в истории жанра.",
+                "Глубокий сюжет, тактические пошаговые бои, кооператив до 4 игроков.",
         "score": "9.8/10", "genre": "RPG / Тактика", "platform": "PC, PS5",
     },
     "hades": {
         "full": "Hades (2020) — roguelite от Supergiant Games. "
-                "Быстрые забеги, исключительный нарратив, отличный саундтрек. "
-                "Один из лучших представителей жанра.",
+                "Быстрые забеги, исключительный нарратив, отличный саундтрек.",
         "score": "9.3/10", "genre": "Roguelite / Action", "platform": "PC, Switch, PS, Xbox",
     },
     "stardew valley": {
         "full": "Stardew Valley (2016) — симулятор фермы с элементами RPG. "
-                "Расслабляющий темп, богатая социальная система, контент на сотни часов. "
-                "Идеально для отдыха.",
+                "Расслабляющий темп, богатая социальная система, контент на сотни часов.",
         "score": "9.4/10", "genre": "Симулятор / Инди", "platform": "PC, Switch, PS, Xbox, Mobile",
     },
     "celeste": {
@@ -424,8 +415,6 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     }
     for key, handler in menu_handlers.items():
         if text_lower == key:
-            if key == "🎮 подобрать игру":
-                return await quiz_start(update, context)
             return await handler(update, context)
 
     # Поиск игры по названию
@@ -436,7 +425,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 f"{info['full']}\n\n"
                 f"Жанр: {info['genre']}\n"
                 f"Платформы: {info['platform']}\n"
-                f"Оценка редакции: {info['score']}"
+                f"Оценка: {info['score']}"
             )
             await update.message.reply_text(reply, reply_markup=MAIN_MENU_KEYBOARD)
             return
@@ -454,7 +443,7 @@ def main():
     app = Application.builder().token(TOKEN).build()
 
     quiz_handler = ConversationHandler(
-        entry_points=[MessageHandler(filters.Regex("^🎮 Подобрать игру$"), quiz_start)],
+        entry_points=[MessageHandler(filters.Regex("^Подобрать игру$"), quiz_start)],
         states={
             QUIZ_GENRE:    [CallbackQueryHandler(quiz_genre,    pattern="^qg_")],
             QUIZ_TIME:     [CallbackQueryHandler(quiz_time,     pattern="^qt_")],
