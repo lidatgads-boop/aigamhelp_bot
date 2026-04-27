@@ -454,6 +454,11 @@ def main():
     )
 
     app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("podborat", quiz_start))
+    app.add_handler(CommandHandler("obzory", reviews))
+    app.add_handler(CommandHandler("gaidy", guides))
+    app.add_handler(CommandHandler("chto_umeet", about_bot))
+    app.add_handler(CommandHandler("o_proekte", about_company))
     app.add_handler(quiz_handler)
     app.add_handler(CallbackQueryHandler(review_detail,  pattern="^review_\\d+$"))
     app.add_handler(CallbackQueryHandler(reviews_back,   pattern="^reviews_back$"))
