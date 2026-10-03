@@ -176,54 +176,43 @@ async def reviews_back(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # ──────────────────────────────────────────────
 # Раздел: Гайды
 # ──────────────────────────────────────────────
-GUIDES = {
-    "Общие советы для новичков": (
-        "1. Начинайте с игр, у которых есть обучение — оно сэкономит время.\n"
-        "2. Не бойтесь менять сложность: игра должна приносить удовольствие, а не стресс.\n"
-        "3. Читайте описания предметов и умений — большинство механик объяснены в самой игре.\n"
-        "4. Делайте паузы: 1-2 часа в день комфортнее, чем многочасовые марафоны.\n"
-        "5. Пробуйте жанры за пределами зоны комфорта — часто именно там находится любимая игра."
-    ),
-    "Как выбрать игру по жанру": (
-        "Action / Экшен — для тех, кто хочет динамику и быстрые реакции.\n"
-        "RPG — для любителей глубоких историй и развития персонажа.\n"
-        "Стратегия — если нравится думать, планировать и управлять ресурсами.\n"
-        "Инди — небольшие игры часто предлагают уникальный опыт за меньшие деньги.\n"
-        "Roguelite — короткие забеги с нарастающей сложностью, идеально для ограниченного времени."
-    ),
-    "Советы по Elden Ring": (
-        "1. Не спешите в основные локации — исследуйте катакомбы и подземелья для прокачки.\n"
-        "2. Уровень кузнеца важнее уровня персонажа: улучшайте оружие.\n"
-        "3. Призывайте духов в сложных боях — это не читерство, это механика игры.\n"
-        "4. Торрент (лошадь) — ваш главный союзник в открытом мире.\n"
-        "5. Читайте описания предметов: в них скрыт лор и подсказки."
-    ),
-}
+GUIDES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "guides")
+
+GUIDES = [
+    ("Гайд для новичка", "01_guide_novichku.pdf"),
+    ("Как выбрать игру по жанру", "02_guide_zhanry.pdf"),
+    ("Elden Ring: первое прохождение", "03_guide_elden_ring.pdf"),
+    ("Игры без лишних трат", "04_guide_ekonomiya.pdf"),
+    ("Настройка графики и FPS на PC", "05_guide_fps_pc.pdf"),
+    ("Безопасность игрового аккаунта", "06_guide_bezopasnost.pdf"),
+]
+
+GUIDES_MENU_TEXT = (
+    "Гайды GameMatch в формате PDF.\n\n"
+    "Выберите тему - файл придёт сразу. Его можно сохранить и открыть в любой момент."
+)
+
+def guides_keyboard():
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton(title, callback_data=f"guide_{i}")]
+        for i, (title, _) in enumerate(GUIDES)
+    ])
 
 async def guides(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = InlineKeyboardMarkup([
-        [InlineKeyboardButton(title, callback_data=f"guide_{i}")]
-        for i, title in enumerate(GUIDES.keys())
-    ])
-    await update.message.reply_text("Выберите тему гайда:", reply_markup=keyboard)
+    await update.message.reply_text(GUIDES_MENU_TEXT, reply_markup=guides_keyboard())
 
 async def guide_detail(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     idx = int(query.data.split("_")[1])
-    title = list(GUIDES.keys())[idx]
-    text = f"{title}\n\n{GUIDES[title]}"
-    back_btn = InlineKeyboardMarkup([[InlineKeyboardButton("<- Назад к гайдам", callback_data="guides_back")]])
-    await query.edit_message_text(text, reply_markup=back_btn)
+    title, filename = GUIDES[idx]
+    with open(os.path.join(GUIDES_DIR, filename), "rb") as f:
+        await query.message.reply_document(document=f, filename=filename, caption=title)
 
 async def guides_back(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
-    keyboard = InlineKeyboardMarkup([
-        [InlineKeyboardButton(title, callback_data=f"guide_{i}")]
-        for i, title in enumerate(GUIDES.keys())
-    ])
-    await query.edit_message_text("Выберите тему гайда:", reply_markup=keyboard)
+    await query.edit_message_text(GUIDES_MENU_TEXT, reply_markup=guides_keyboard())
 
 
 # ──────────────────────────────────────────────
