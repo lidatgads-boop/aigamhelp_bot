@@ -37,7 +37,7 @@ MAIN_MENU_KEYBOARD = ReplyKeyboardMarkup(
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data.clear()
     text = (
-        "Добро пожаловать в GameMatch — бот для подбора видеоигр.\n\n"
+        "Добро пожаловать в AI подбор игр — бот для подбора видеоигр.\n\n"
         "Здесь вы найдёте:\n"
         "• персональные рекомендации игр\n"
         "• обзоры популярных новинок\n"
@@ -52,7 +52,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # ──────────────────────────────────────────────
 async def about_bot(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
-        "GameMatch умеет:\n\n"
+        "AI подбор игр умеет:\n\n"
         "Подбор игр — ответьте на 4 вопроса и получите персональную подборку, "
         "составленную с учётом вашего жанра, платформы и настроения.\n\n"
         "Обзоры — краткие честные обзоры актуальных игр с оценками по ключевым критериям.\n\n"
@@ -68,7 +68,7 @@ async def about_bot(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # ──────────────────────────────────────────────
 async def about_company(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
-        "GameMatch — независимый проект для игрового сообщества.\n\n"
+        "AI подбор игр — независимый проект для игрового сообщества.\n\n"
         "Наша цель — помочь вам находить игры, которые действительно подходят "
         "именно вам, а не теряться в тысячах релизов.\n\n"
         "Мы регулярно обновляем базу обзоров и гайдов, добавляем новые игры "
@@ -83,7 +83,7 @@ async def about_company(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # ──────────────────────────────────────────────
 async def contacts(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
-        "Связь с командой GameMatch:\n\n"
+        "Связь с командой AI подбор игр:\n\n"
         "Написать напрямую: @gamematch_support\n\n"
         "Мы отвечаем в будние дни с 10:00 до 20:00 (МСК).\n\n"
         "Предложения по улучшению бота, сотрудничество и вопросы — "
@@ -188,7 +188,7 @@ GUIDES = [
 ]
 
 GUIDES_MENU_TEXT = (
-    "Гайды GameMatch в формате PDF.\n\n"
+    "Гайды бота AI подбор игр в формате PDF.\n\n"
     "Выберите тему - файл придёт сразу. Его можно сохранить и открыть в любой момент."
 )
 
